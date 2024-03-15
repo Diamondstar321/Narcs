@@ -7,7 +7,7 @@ class Employee:
     id (str): The id of the employee
     password (str): The password of the employee
     Returns: None
-    Rises: None
+    Raises: None
     """
     self.name = name
     self._id= id
@@ -19,7 +19,7 @@ class Employee:
     Args: 
     name (str): The name of the employee
     Returns: None
-    Rises: None
+    Raises: None
     """
     self.name = name
     print("Employee name is set to: ", self.name)
@@ -29,7 +29,7 @@ class Employee:
     This function is used to get the name of the employee
     Args: None
     Returns: str: The name of the employee
-    Rises: None
+    Raises: None
     """
     return self.name
 
@@ -39,7 +39,7 @@ class Employee:
     Args:
     id (str): The id of the employee
     Returns: None
-    Rises: None
+    Raises: None
     """
     self._id = id
     print("Please enter your ID: ", self._id)
@@ -50,7 +50,7 @@ class Employee:
     Args:
     password (str): The password of the employee
     Returns: None
-    Rises: None
+    Raises: None
     """
     self._password = password
     print("Please enter your password: ", self._password)
