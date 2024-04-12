@@ -1,5 +1,6 @@
 class Prescription:
-  def __init__(self, name, expiration_date, shelf_life, price):
+
+  def __init__(self, name, expiration_date, shelf_life, price, stock):
     """
     Function to initialize the prescription object
 
@@ -8,6 +9,7 @@ class Prescription:
       expiration_date (str): Expiration date of the prescription
       shelf_life (int): Shelf life of the prescription
       price (float): Price of the prescription
+      stock (int): Stock of the prescription
     Returns: None
     Raises: None
     """
@@ -15,6 +17,7 @@ class Prescription:
     self.expiration_date = expiration_date
     self.shelf_life = shelf_life
     self.price = price
+    self.stock = stock
 
   def set_prescription_name(self, name):
     """
@@ -25,7 +28,7 @@ class Prescription:
     Raises: None
     """
     self.name = name
-    
+
   def get_prescription_name(self):
     """
     Function that gets the prescription name
@@ -53,7 +56,7 @@ class Prescription:
     Raises: None
     """
     return self.expiration_date
-  
+
   def set_shelf_life(self, shelf_life):
     """
     Function that sets the shelf life of the prescription.
@@ -72,7 +75,7 @@ class Prescription:
     Raises: None
     """
     return self.shelf_life
-    
+
   def set_price(self, price):
     """
     Function that sets the price of the prescription.
@@ -91,3 +94,22 @@ class Prescription:
     Raises: None
     """
     return self.price
+
+
+  def set_stock(self, stock):
+    """
+    Function that sets the stock of the prescription.
+    Args: 
+      stock (int): Stock of the prescription
+    Returns: None
+    Raises: None 
+    """
+    self.stock = stock
+
+  def get_stock(self):
+    """
+    Retrieves the stock of the prescription.
+    Args: None
+    Returns: int: Stock of the prescription
+    Raises: None
+    """

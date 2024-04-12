@@ -59,7 +59,7 @@ class Customer(Prescription):
     """
     self.payment_information = payment_information
 
-  def get_prescription(self, prescription) -> str:
+  def get_prescription(self):
     """
     get the prescription of the customer
     Args:
