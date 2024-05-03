@@ -1,13 +1,16 @@
+import csv
+from datetime import datetime
+
+
 class Prescription:
 
-  def __init__(self, name, expiration_date, shelf_life, price, stock):
+  def __init__(self, name, expiration_date, price, stock):
     """
     Function to initialize the prescription object
 
     Args:
       name (str): Name of the prescription
       expiration_date (str): Expiration date of the prescription
-      shelf_life (int): Shelf life of the prescription
       price (float): Price of the prescription
       stock (int): Stock of the prescription
     Returns: None
@@ -15,10 +18,9 @@ class Prescription:
     """
     self.name = name
     self.expiration_date = expiration_date
-    self.shelf_life = shelf_life
     self.price = price
     self.stock = stock
-
+  
   def set_prescription_name(self, name):
     """
     Function that sets the prescription name
@@ -57,25 +59,6 @@ class Prescription:
     """
     return self.expiration_date
 
-  def set_shelf_life(self, shelf_life):
-    """
-    Function that sets the shelf life of the prescription.
-    Args:
-      shelf_life (int): Shelf life of the prescription
-    Returns: None
-    Raises: None
-    """
-    self.shelf_life = shelf_life
-
-  def get_shelf_life(self):
-    """
-    Retrieves the shelf life of the prescription.
-    Args: None
-    Returns: int: Shelf life of the prescription
-    Raises: None
-    """
-    return self.shelf_life
-
   def set_price(self, price):
     """
     Function that sets the price of the prescription.
@@ -113,3 +96,86 @@ class Prescription:
     Returns: int: Stock of the prescription
     Raises: None
     """
+    return self.stock
+
+#read|write|update|delete operations
+
+  @staticmethod
+  def add_prescription(prescription):
+      with open('prescription_database.csv', mode='a', newline='') as file:
+          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+          writer = csv.DictWriter(file, fieldnames=fieldnames)
+          if file.tell() == 0:  # Check if file is at the start to write the header
+              writer.writeheader()
+          writer.writerow({
+              'Name': prescription.name,
+              'Expiration Date': prescription.expiration_date,
+              'Price': prescription.price,
+              'Stock': prescription.stock
+          })
+  
+  @staticmethod
+  def read_prescriptions():
+      prescriptions = []
+      try:
+          with open('prescription_database.csv', mode='r') as file:
+              reader = csv.DictReader(file)
+              for row in reader:
+                  prescriptions.append(row)
+      except FileNotFoundError:
+          print("The database file does not exist.")
+      return prescriptions
+  
+  @staticmethod
+  def update_prescription(name, updated_prescription):
+      prescriptions = Prescription.read_prescriptions()
+      updated = False
+      with open('prescription_database.csv', mode='w', newline='') as file:
+          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+          writer = csv.DictWriter(file, fieldnames=fieldnames)
+          writer.writeheader()
+          for prescription in prescriptions:
+              if prescription['Name'].lower() == name.lower():
+                  writer.writerow({
+                      'Name': updated_prescription.name,
+                      'Expiration Date': updated_prescription.expiration_date,
+                      'Price': updated_prescription.price,
+                      'Stock': updated_prescription.stock
+                  })
+                  updated = True
+              else:
+                  writer.writerow(prescription)
+      return updated
+
+  @staticmethod
+  def update_prescription_database(prescriptions):
+      """Update the entire prescription database with new data."""
+      with open('prescription_database.csv', mode='w', newline='') as file:
+          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+          writer = csv.DictWriter(file, fieldnames=fieldnames)
+          writer.writeheader()
+          for prescription in prescriptions:
+              writer.writerow({
+                  'Name': prescription['Name'],
+                  'Expiration Date': prescription['Expiration Date'],
+                  'Price': prescription['Price'],
+                  'Stock': prescription['Stock']
+              })
+
+  
+  @staticmethod
+  def delete_prescription(name):
+      prescriptions = Prescription.read_prescriptions()
+      with open('prescription_database.csv', mode='w', newline='') as file:
+          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+          writer = csv.DictWriter(file, fieldnames=fieldnames)
+          writer.writeheader()
+          for prescription in prescriptions:
+              if prescription['Name'].lower() != name.lower():
+                  writer.writerow(prescription)
+  
+
+
+  
+          
+

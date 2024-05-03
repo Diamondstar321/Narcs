@@ -1,27 +1,17 @@
 from prescription import Prescription
-from customer import Customer
-from employee import Employee
+from shopping_cart import ShoppingCart
+import csv
 
-class Order(Customer, Employee, Prescription):
 
-  def __init__(self, name: str, orderNumber: int, prescription: str, deliveryDate: str, shippingAddress: str, employeeName: str):
-    """
-    This function is the initializer for the Order class.
-    Args:
-      name (str): The name of the order
-      orderNumber (int): The order number of the order
-      prescription (str): The prescription of the order
-      shiipingAddress (str): The shipping address of the order
-      deliveryDate (str): The delivery date of the order
-      employeeName (str): The name of the employee who is delivering the order
-    """
-    self.name = name 
-    self.order_number = orderNumber
-    self.prescription = prescription
-    self.delivery_date = deliveryDate
-    self.shipping_address = shippingAddress
-    self.employee_name = employeeName
-  
+class Order:
+  def __init__(self, name, orderNumber, shoppingCart, deliveryDate, shippingAddress, status):
+      self.name = name
+      self.order_number = orderNumber
+      self.shopping_cart = shoppingCart
+      self.delivery_date = deliveryDate
+      self.shipping_address = shippingAddress
+      self.status = status
+    
   def getName(self) -> str:
     """
     Returns the customer's name
@@ -39,15 +29,6 @@ class Order(Customer, Employee, Prescription):
     Raises: None
     """
     return self.order_number
-  
-  def getPrescription(self) -> str:
-    """ 
-    This function returns the prescription of the order
-    Args:None
-    Returns the prescription
-    Raises: None
-    """
-    return self.prescription
   
   def getDeliveryDate(self) -> str:
     """
@@ -67,12 +48,47 @@ class Order(Customer, Employee, Prescription):
     """
     return self.shipping_address
   
-  def getEmployeeName(self) -> str:
+  def getStatus(self) -> str:
     """
     Returns the employee responsible for fulfilling the order
     Args: None
     Returns: str: The name of the employee
     Raises: None
     """
-    return self.employee_name
+    return self.status
+
+  def save_to_order_database(self):
+    subtotal = sum(item['price'] * item['quantity'] for item in self.shopping_cart.items.values())
+    tax = subtotal * 0.08
+    total_cost = subtotal + tax
+    order_details = '; '.join([f"{item['name']} (x{item['quantity']})" for item in self.shopping_cart.items.values()])
+
+    headers = ['Order Number', 'Customer Name', 'Delivery Date', 'Shipping Address', 'Status', 'Order Details', 'Total Cost']
+    try:
+        with open('order_database.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            has_headers = next(reader, None)
+    except FileNotFoundError:
+        has_headers = False 
+
+    with open('order_database.csv', 'a', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=headers)
+        if not has_headers:
+            writer.writeheader()
+        writer.writerow({
+            'Order Number': self.order_number,
+            'Customer Name': self.name,
+            'Delivery Date': self.delivery_date,
+            'Shipping Address': self.shipping_address,
+            'Status': self.status,
+            'Order Details': order_details,
+            'Total Cost': f"${total_cost:.2f}"
+        })
+
+
+  def print_receipt(self, shopping_cart):
+    print(f"Receipt for Order #{self.order_number}")
+    shopping_cart.print_receipt()
+
+
   
