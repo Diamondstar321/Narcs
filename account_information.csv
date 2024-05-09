@@ -1,3 +1,4 @@
-FullName,UserName,Password,IsEmployee
+FullName,UserName,Password,IsEmployee, 
 Kyle Deocades,kyle,2024,True
 Ken Carter,ken,2024,False
+Bryan Tieu,bry,123,True

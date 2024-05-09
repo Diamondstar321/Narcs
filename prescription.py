@@ -102,131 +102,122 @@ class Prescription:
 
   @staticmethod
   def add_prescription(prescription):
-      """
-      Adds a new prescription to the 'prescription_database.csv' file. If the file is empty,
-      it also writes the headers. This method assumes the Prescription object contains all necessary fields.
-
+    """
+      Adds a prescription to the prescription database.
       Args:
-          prescription (Prescription): The Prescription object to add to the database.
-
-      Raises:
-          IOError: If the file could not be opened or written to.
-      """
-      with open('prescription_database.csv', mode='a', newline='') as file:
-          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
-          writer = csv.DictWriter(file, fieldnames=fieldnames)
-          if file.tell() == 0:  # Check if file is at the start to write the header
-              writer.writeheader()
-          writer.writerow({
-              'Name': prescription.name,
-              'Expiration Date': prescription.expiration_date,
-              'Price': prescription.price,
-              'Stock': prescription.stock
-          })
+          prescription (Prescription): The prescription object to add.
+    """
+    with open('prescription_database.csv', mode='a', newline='') as file:
+        fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        if file.tell() == 0:  # Check if file is at the start to write the header
+            writer.writeheader()
+        writer.writerow({
+            'Name': prescription.name,
+            'Expiration Date': prescription.expiration_date,
+            'Price': prescription.price,
+            'Stock': prescription.stock
+        })
 
   @staticmethod
   def read_prescriptions():
-      """
-      Reads all prescriptions from the 'prescription_database.csv' file and returns them as a list of dictionaries.
-
-      Returns:
-          list of dict: A list of all prescriptions read from the file, each represented as a dictionary.
-
-      Raises:
-          FileNotFoundError: If the 'prescription_database.csv' file does not exist.
-      """
-      prescriptions = []
-      try:
-          with open('prescription_database.csv', mode='r') as file:
-              reader = csv.DictReader(file)
-              for row in reader:
-                  prescriptions.append(row)
-      except FileNotFoundError:
-          print("The database file does not exist.")
-      return prescriptions
-
-  @staticmethod
-  def update_prescription(name, updated_prescription):
-      """
-      Updates an existing prescription in the 'prescription_database.csv' file based on the name provided. 
-      It replaces the old prescription data with the updated data.
-
-      Args:
-          name (str): The name of the prescription to update.
-          updated_prescription (Prescription): The new prescription data to replace the old one.
-
-      Returns:
-          bool: True if the update was successful, False otherwise.
-
-      Raises:
-          IOError: If the file could not be opened or written to.
-      """
-      prescriptions = Prescription.read_prescriptions()
-      updated = False
-      with open('prescription_database.csv', mode='w', newline='') as file:
-          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
-          writer = csv.DictWriter(file, fieldnames=fieldnames)
-          writer.writeheader()
-          for prescription in prescriptions:
-              if prescription['Name'].lower() == name.lower():
-                  writer.writerow({
-                      'Name': updated_prescription.name,
-                      'Expiration Date': updated_prescription.expiration_date,
-                      'Price': updated_prescription.price,
-                      'Stock': updated_prescription.stock
-                  })
-                  updated = True
-              else:
-                  writer.writerow(prescription)
-      return updated
-
-  @staticmethod
-  def update_prescription_database(prescriptions):
-      """
-      Updates the entire prescription database by overwriting it with new data.
-
-      This method takes a list of dictionaries where each dictionary represents a prescription item. 
-      Each prescription item must contain keys for 'Name', 'Expiration Date', 'Price', and 'Stock'.
-      The entire existing database file will be overwritten with the data provided.
-
-      Parameters:
-          prescriptions (list of dict): A list of dictionaries with each dictionary containing 
-                                        details of a prescription, including name, expiration date,
-                                        price, and stock level.
-
-      Raises:
-          IOError: If the file cannot be opened or written to.
-          ValueError: If an incorrect format is provided in the prescriptions list.
-      """
-      with open('prescription_database.csv', mode='w', newline='') as file:
-          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
-          writer = csv.DictWriter(file, fieldnames=fieldnames)
-          writer.writeheader()
-          for prescription in prescriptions:
-              writer.writerow({
-                  'Name': prescription['Name'],
-                  'Expiration Date': prescription['Expiration Date'],
-                  'Price': prescription['Price'],
-                  'Stock': prescription['Stock']
-              })
+    """
+        Reads prescriptions from the prescription database.
+        Returns:
+            List of dictionaries containing prescription data.
+    """
+    prescriptions = []
+    try:
+        with open('prescription_database.csv', mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                prescriptions.append(row)
+    except FileNotFoundError:
+        print("The database file does not exist.")
+    return prescriptions
 
 
   @staticmethod
   def delete_prescription(name):
+    """
+        Deletes a prescription from the database based on the prescription name.
+        Args:
+            name (str): Name of the prescription to delete.
+    """
+    prescriptions = Prescription.read_prescriptions()
+    with open('prescription_database.csv', mode='w', newline='') as file:
+        fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for prescription in prescriptions:
+            if prescription['Name'].lower() != name.lower():
+                writer.writerow(prescription)
+
+
+  @staticmethod
+  def update_prescription(name, updated_prescription):
       """
-      Deletes a prescription from the 'prescription_database.csv' file based on the prescription name.
-
-      Args:
-          name (str): The name of the prescription to delete.
-
-      Raises:
-          IOError: If the file could not be opened or written to.
+        Updates a specific prescription in the database.
+        Args:
+            name (str): Name of the prescription to update.
+            updated_prescription (Prescription): Updated prescription data.
+        Returns:
+            bool: True if the update was successful, False otherwise.
       """
       prescriptions = Prescription.read_prescriptions()
-      with open('prescription_database.csv', mode='w', newline='') as file:
-          fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
-          writer = csv.DictWriter(file, fieldnames=fieldnames)
-          writer.writeheader()
-          for prescription in prescriptions:
-              if prescription['Name'].lower() != name.lower():
-                  writer.writerow(prescription)
+      updated = False
+      updated_prescriptions = []
+
+      for prescription in prescriptions:
+          if prescription['Name'].lower() == name.lower():
+              print(f"Updating {name}...")
+              updated_prescriptions.append({
+                  'Name': updated_prescription.name,
+                  'Expiration Date': updated_prescription.expiration_date,
+                  'Price': updated_prescription.price,
+                  'Stock': updated_prescription.stock
+              })
+              updated = True
+          else:
+              updated_prescriptions.append(prescription)
+
+      if updated:
+          print(f"{name} updated successfully. Writing back to file...")
+          with open('prescription_database.csv', mode='w', newline='') as file:
+              fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+              writer = csv.DictWriter(file, fieldnames=fieldnames)
+              writer.writeheader()
+              writer.writerows(updated_prescriptions)
+
+      return updated
+
+
+  @staticmethod
+  def update_prescription_database(prescriptions):
+    """
+    Updates the entire prescription database by overwriting it with new data.
+    
+    This method takes a list of dictionaries where each dictionary represents a prescription item. 
+    Each prescription item must contain keys for 'Name', 'Expiration Date', 'Price', and 'Stock'.
+    The entire existing database file will be overwritten with the data provided.
+
+    Parameters:
+        prescriptions (list of dict): A list of dictionaries with each dictionary containing 
+                                      details of a prescription, including name, expiration date,
+                                      price, and stock level.
+
+    Raises:
+        IOError: If the file cannot be opened or written to.
+        ValueError: If an incorrect format is provided in the prescriptions list.
+    """
+    with open('prescription_database.csv', mode='w', newline='') as file:
+        fieldnames = ['Name', 'Expiration Date', 'Price', 'Stock']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for prescription in prescriptions:
+            writer.writerow({
+                'Name': prescription['Name'],
+                'Expiration Date': prescription['Expiration Date'],
+                'Price': prescription['Price'],
+                'Stock': prescription['Stock']
+            })

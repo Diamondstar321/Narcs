@@ -9,6 +9,7 @@ from session import Session
 from shopping_cart import ShoppingCart
 from datetime import datetime, timedelta
 
+
 def login(session):
     """
     Authenticate a user based on username and password.
@@ -24,7 +25,10 @@ def login(session):
         for row in reader:
             if row['UserName'] == username and row['Password'] == password:
                 session.logged_in = True
-                session.user_data = {"UserName": username, "IsEmployee": row['IsEmployee']}
+                session.user_data = {
+                    "UserName": username,
+                    "IsEmployee": row['IsEmployee']
+                }
                 if row['IsEmployee'].lower() == 'true':
                     session.current_menu = admin_menu
                     print("Login successful! Welcome, Admin.")
@@ -33,6 +37,7 @@ def login(session):
                     print("Login successful! Welcome, User.")
                 return
         print("Invalid credentials!")
+
 
 def logout(session):
     """
@@ -46,6 +51,7 @@ def logout(session):
     session.user_data = None
     session.current_menu = menu_main
     print("Logged out.\n")
+
 
 def register(session):
     """
@@ -74,8 +80,14 @@ def register(session):
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         if not file_exists:
             writer.writeheader()
-        writer.writerow({'FullName': full_name, 'UserName': username, 'Password': password, 'IsEmployee': is_employee})
+        writer.writerow({
+            'FullName': full_name,
+            'UserName': username,
+            'Password': password,
+            'IsEmployee': is_employee
+        })
     print("\nAccount created for username:", username)
+
 
 def create_account(session):
     """
@@ -87,6 +99,7 @@ def create_account(session):
     """
     register(session)
 
+
 def manage_account_info(session):
     """
     Allows viewing and manipulation of account information in the database.
@@ -97,19 +110,26 @@ def manage_account_info(session):
     """
     print("\nAccount Information Database")
     while True:
-        choice = input("\n1. View Accounts\n2. Add New Account\n3. Delete Account\n4. Return to Main Menu\nSelect an option: ")
+        choice = input(
+            "\n1. View Accounts\n2. Add New Account\n3. Delete Account\n4. Return to Main Menu\nSelect an option: "
+        )
         print('')
         if choice == '1':
             # View all accounts
             try:
-                with open('account_information.csv', 'r', newline='') as csvfile:
+                with open('account_information.csv', 'r',
+                          newline='') as csvfile:
                     reader = csv.DictReader(csvfile)
                     # Print headers based on the fieldnames attribute of the reader
                     if reader.fieldnames:
-                        print(f"{'Full Name':<20} {'User Name':<20} {'Is Employee':<12}")
-                        print("="*54)
+                        print(
+                            f"{'Full Name':<20} {'User Name':<20} {'Is Employee':<12}"
+                        )
+                        print("=" * 54)
                     for row in reader:
-                        print(f"{row['FullName']:<20} {row['UserName']:<20} {row['IsEmployee']:<12}")
+                        print(
+                            f"{row['FullName']:<20} {row['UserName']:<20} {row['IsEmployee']:<12}"
+                        )
             except FileNotFoundError:
                 print("No account information available.")
         elif choice == '2':
@@ -117,18 +137,25 @@ def manage_account_info(session):
             full_name = input("Full name: ")
             username = input("Choose a username: ")
             password = input("Choose a password: ")
-            is_employee = input("Is this user an employee? (y/n): ").lower() == 'y'
+            is_employee = input(
+                "Is this user an employee? (y/n): ").lower() == 'y'
             file_exists = os.path.isfile('account_information.csv')
             with open('account_information.csv', 'a', newline='') as csvfile:
                 fieldnames = ['FullName', 'UserName', 'Password', 'IsEmployee']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 if not file_exists:
                     writer.writeheader()
-                writer.writerow({'FullName': full_name, 'UserName': username, 'Password': password, 'IsEmployee': is_employee})
+                writer.writerow({
+                    'FullName': full_name,
+                    'UserName': username,
+                    'Password': password,
+                    'IsEmployee': is_employee
+                })
             print("New account added successfully.")
         elif choice == '3':
             #Delete an account
-            username_to_delete = input("Enter the username of the account to delete: ")
+            username_to_delete = input(
+                "Enter the username of the account to delete: ")
             accounts = []
             deleted = False
             with open('account_information.csv', 'r', newline='') as csvfile:
@@ -139,12 +166,17 @@ def manage_account_info(session):
                     else:
                         deleted = True
             if deleted:
-                with open('account_information.csv', 'w', newline='') as csvfile:
-                    fieldnames = ['FullName', 'UserName', 'Password', 'IsEmployee']
+                with open('account_information.csv', 'w',
+                          newline='') as csvfile:
+                    fieldnames = [
+                        'FullName', 'UserName', 'Password', 'IsEmployee'
+                    ]
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     writer.writeheader()
                     writer.writerows(accounts)
-                print(f"Account for username '{username_to_delete}' deleted successfully.")
+                print(
+                    f"Account for username '{username_to_delete}' deleted successfully."
+                )
             else:
                 print("Account not found.")
         elif choice == '4':
@@ -165,7 +197,10 @@ def manage_customer_orders(session):
     try:
         with open('order_database.csv', 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            fieldnames = reader.fieldnames if reader.fieldnames is not None else ['Order Number', 'Customer Name', 'Order Details', 'Status', 'Shipping Address', 'Total Cost']
+            fieldnames = reader.fieldnames if reader.fieldnames is not None else [
+                'Order Number', 'Customer Name', 'Order Details', 'Status',
+                'Shipping Address', 'Total Cost'
+            ]
             orders = list(reader)
 
             if not orders:
@@ -188,7 +223,8 @@ def manage_customer_orders(session):
             '4': 'Order Cancelled'
         }
 
-        order_number = input("\nEnter Order Number to update status, or 'exit' to return: ")
+        order_number = input(
+            "\nEnter Order Number to update status, or 'exit' to return: ")
         if order_number.lower() == 'exit':
             return
 
@@ -234,65 +270,92 @@ def manage_inventory(session):
     """
     while True:
         print("\nPrescription Inventory Management")
-        choice = input("\n1. View Full Inventory\n2. Add New Item\n3. Update Item\n4. Delete Item\n5. Return to Admin Menu\nSelect an option: ")
+        choice = input(
+            "\n1. View Full Inventory\n2. Add New Item\n3. Update Item\n4. Delete Item\n5. Return to Admin Menu\nSelect an option: "
+        )
         print('')
 
         if choice == '1':
             try:
-                with open('prescription_database.csv', 'r', newline='') as csvfile:
+                with open('prescription_database.csv', 'r',
+                          newline='') as csvfile:
                     reader = csv.DictReader(csvfile)
                     if not reader.fieldnames:
                         print("The inventory file is empty.")
                         return
-                    print(f"{'Product Name':<20} {'Expiration Date':<12} {'Price':<10} {'Stock':<10}")
+                    print(
+                        f"{'Product Name':<20} {'Expiration Date':<12} {'Price':<10} {'Stock':<10}"
+                    )
                     for row in reader:
-                        print(f"{row['Name']:<20} {row['Expiration Date']:<12} ${row['Price']:<10} {row['Stock']:<10}")
+                        print(
+                            f"{row['Name']:<20} {row['Expiration Date']:<12} ${row['Price']:<10} {row['Stock']:<10}"
+                        )
             except FileNotFoundError:
                 print("The pharmacy inventory file does not exist.")
             except KeyError:
-                print("Error reading from the inventory file. Please check the data format.")
+                print(
+                    "Error reading from the inventory file. Please check the data format."
+                )
             except Exception as e:
                 print(f"An error occurred: {e}")
 
         elif choice == '2':
             name = input("Enter drug name: ")
             while True:
-                expiration_date = input("Enter new expiration date (Months (1-12)): ")
-                if expiration_date.isdigit() and 1 <= int(expiration_date) <= 12:
+                expiration_date = input(
+                    "Enter new expiration date (Months (1-12)): ")
+                if expiration_date.isdigit(
+                ) and 1 <= int(expiration_date) <= 12:
                     break
                 else:
-                    print("Invalid input. Please enter a month between 1 and 12.")
+                    print(
+                        "Invalid input. Please enter a month between 1 and 12."
+                    )
             price = int(input("Enter price: "))
             stock = int(input("Enter stock quantity: "))
-            new_prescription = Prescription(name, expiration_date, price, stock)
+            new_prescription = Prescription(name, expiration_date, price,
+                                            stock)
             Prescription.add_prescription(new_prescription)
             print("New inventory item added successfully.")
 
         elif choice == '3':
-            existing_name = input("Enter the name of the prescription to update: ").strip().lower()
+            existing_name = input(
+                "Enter the name of the prescription to update: ").strip(
+                ).lower()
             prescriptions = Prescription.read_prescriptions()
-            prescription_found = any(prescription['Name'].strip().lower() == existing_name for prescription in prescriptions)
+            prescription_found = any(
+                prescription['Name'].strip().lower() == existing_name
+                for prescription in prescriptions)
             if not prescription_found:
                 print("Prescription not found.")
             else:
                 updated = False
                 for prescription in prescriptions:
                     if prescription['Name'].strip().lower() == existing_name:
-                        expiration_date = input("Enter new expiration date (Months (1-12)): ")
-                        while not (expiration_date.isdigit() and 1 <= int(expiration_date) <= 12):
-                            print("Invalid input. Please enter a month between 1 and 12.")
-                            expiration_date = input("Enter new expiration date (Months (1-12)): ")
+                        expiration_date = input(
+                            "Enter new expiration date (Months (1-12)): ")
+                        while not (expiration_date.isdigit()
+                                   and 1 <= int(expiration_date) <= 12):
+                            print(
+                                "Invalid input. Please enter a month between 1 and 12."
+                            )
+                            expiration_date = input(
+                                "Enter new expiration date (Months (1-12)): ")
                         price = int(input("Enter new price: "))
                         stock = int(input("Enter new stock quantity: "))
-                        updated_prescription = Prescription(prescription['Name'], expiration_date, price, stock)
-                        Prescription.update_prescription(prescription['Name'], updated_prescription)
+                        updated_prescription = Prescription(
+                            prescription['Name'], expiration_date, price,
+                            stock)
+                        Prescription.update_prescription(
+                            prescription['Name'], updated_prescription)
                         updated = True
                         break
                 if updated:
                     print("Prescription updated successfully.")
 
         elif choice == '4':
-            name_to_delete = input("Enter the name of the item to delete: ").strip().lower()
+            name_to_delete = input(
+                "Enter the name of the item to delete: ").strip().lower()
             if Prescription.delete_prescription(name_to_delete):
                 print(f"Prescription '{name_to_delete}' deleted successfully.")
             else:
@@ -321,7 +384,8 @@ def view_pharmacy_inventory(session):
                 print("The inventory file is empty.")
                 return
             expected_fields = ["Name", "Expiration Date", "Price", "Stock"]
-            if not all(field in reader.fieldnames for field in expected_fields):
+            if not all(field in reader.fieldnames
+                       for field in expected_fields):
                 print("Missing required columns in the inventory file.")
                 return
             print(f"{'Product Name':<20} {'Price':<10} {'Stock':<10}")
@@ -333,7 +397,9 @@ def view_pharmacy_inventory(session):
     except FileNotFoundError:
         print("The pharmacy inventory file does not exist.")
     except KeyError:
-        print("Error reading from the inventory file. Please check the data format.")
+        print(
+            "Error reading from the inventory file. Please check the data format."
+        )
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -351,23 +417,32 @@ def create_new_order(session):
 
     print("\nAvailable Prescriptions:")
     for idx, prescription in enumerate(prescriptions, start=1):
-        print(f"{idx}. {prescription['Name']} - ${prescription['Price']} (Stock: {prescription['Stock']})")
+        print(
+            f"{idx}. {prescription['Name']} - ${prescription['Price']} (Stock: {prescription['Stock']})"
+        )
 
     while True:
-        choice = input("\nEnter prescription number to add to cart or type 'done' to finalize: ")
+        choice = input(
+            "\nEnter prescription number to add to cart or type 'done' to finalize: "
+        )
         if choice.lower() == 'done':
             if not shopping_cart.items:
-                print("No items in your cart to finalize. Please add some items.")
+                print(
+                    "No items in your cart to finalize. Please add some items."
+                )
                 continue
             break
         elif choice.isdigit() and 1 <= int(choice) <= len(prescriptions):
             idx = int(choice) - 1
             selected_prescription = prescriptions[idx]
-            quantity = int(input(f"Enter quantity for {selected_prescription['Name']}: "))
+            quantity = int(
+                input(f"Enter quantity for {selected_prescription['Name']}: "))
             if quantity <= int(selected_prescription['Stock']):
                 shopping_cart.add_item(selected_prescription, quantity)
             else:
-                print(f"Not enough stock for {selected_prescription['Name']}. Available stock: {selected_prescription['Stock']}")
+                print(
+                    f"Not enough stock for {selected_prescription['Name']}. Available stock: {selected_prescription['Stock']}"
+                )
         else:
             print("Invalid choice. Please select a valid prescription number.")
 
@@ -376,16 +451,13 @@ def create_new_order(session):
     print("2: PayPal")
     print("3: Pay-in-4")
     payment_method = input("Enter your payment option (1-3): ")
-    payment_methods = {
-        '1': 'Card',
-        '2': 'PayPal',
-        '3': 'Pay-in-4'
-    }
-    
+    payment_methods = {'1': 'Card', '2': 'PayPal', '3': 'Pay-in-4'}
+
     for item_name, details in shopping_cart.items.items():
         for prescription in prescriptions:
             if prescription['Name'] == item_name:
-                prescription['Stock'] = str(int(prescription['Stock']) - details['quantity'])
+                prescription['Stock'] = str(
+                    int(prescription['Stock']) - details['quantity'])
 
     Prescription.update_prescription_database(prescriptions)
 
@@ -395,7 +467,8 @@ def create_new_order(session):
     shipping_address = input("Enter shipping address: ")
     status = "Order Placed"
 
-    new_order = Order(customer_name, order_number, shopping_cart, delivery_date, shipping_address, status)
+    new_order = Order(customer_name, order_number, shopping_cart,
+                      delivery_date, shipping_address, status)
     new_order.print_receipt(shopping_cart)
     new_order.save_to_order_database()
     print("Order created successfully and receipt printed.")
@@ -429,7 +502,10 @@ def view_order_history(session):
     try:
         with open('order_database.csv', 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            default_fieldnames = ['Order Number', 'Customer Name', 'Order Details', 'Status', 'Shipping Address', 'Total Cost']
+            default_fieldnames = [
+                'Order Number', 'Customer Name', 'Order Details', 'Status',
+                'Shipping Address', 'Total Cost'
+            ]
             fieldnames = reader.fieldnames if reader.fieldnames is not None else default_fieldnames
             orders = list(reader)
 
@@ -444,15 +520,19 @@ def view_order_history(session):
                     print(f"{'Customer Name':<15}: {order['Customer Name']}")
                     print(f"{'Order Details':<15}: {order['Order Details']}")
                     print(f"{'Status':<15}: {order['Status']}")
-                    print(f"{'Shipping Address':<15}: {order['Shipping Address']}")
+                    print(
+                        f"{'Shipping Address':<15}: {order['Shipping Address']}"
+                    )
                     print(f"{'Total Cost':<15}: {order['Total Cost']}")
 
-            order_number = input("\nEnter Order Number to CANCEL, or type 'exit' to return: ")
+            order_number = input(
+                "\nEnter Order Number to CANCEL, or type 'exit' to return: ")
             if order_number.lower() == 'exit':
                 return
 
             for order in orders:
-                if order['Order Number'] == order_number and order['Customer Name'] == customer_name:
+                if order['Order Number'] == order_number and order[
+                        'Customer Name'] == customer_name:
                     if order['Status'] in ['Order Placed', 'Order Shipped']:
                         order['Status'] = 'Cancelled'
                         print(f"Order {order_number} has been cancelled.")
@@ -472,6 +552,7 @@ def view_order_history(session):
         print("The order database file does not exist.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def edit_account_information(session):
     """
@@ -493,19 +574,23 @@ def edit_account_information(session):
             reader = csv.DictReader(csvfile)
             accounts = list(reader)
 
-        new_username = input("Enter your new username (leave blank to keep current): ").strip()
-        new_password = input("Enter your new password (leave blank to keep current): ").strip()
+        new_username = input(
+            "Enter your new username (leave blank to keep current): ").strip()
+        new_password = input(
+            "Enter your new password (leave blank to keep current): ").strip()
 
         for account in accounts:
             if account['UserName'] == current_username:
                 if new_username:
-                    if any(acc['UserName'] == new_username for acc in accounts if acc['UserName'] != current_username):
-                        print("Username already exists. Try a different username.")
+                    if any(acc['UserName'] == new_username for acc in accounts
+                           if acc['UserName'] != current_username):
+                        print(
+                            "Username already exists. Try a different username."
+                        )
                         return
                     account['UserName'] = new_username
                 if new_password:
                     account['Password'] = new_password
-                break
 
         with open('account_information.csv', 'w', newline='') as csvfile:
             fieldnames = ['FullName', 'UserName', 'Password', 'IsEmployee']
@@ -513,13 +598,15 @@ def edit_account_information(session):
             writer.writeheader()
             writer.writerows(accounts)
 
-        session.user_data['UserName'] = new_username if new_username else current_username
+        session.user_data[
+            'UserName'] = new_username if new_username else current_username
         print("Account information updated successfully.")
 
     except FileNotFoundError:
         print("The account database file does not exist.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def main():
     """
@@ -549,6 +636,7 @@ def main():
             print("Application has been exited.")
             break
         exec(action_text, globals_dict)
+
 
 if __name__ == "__main__":
     main()
