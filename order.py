@@ -58,6 +58,18 @@ class Order:
     return self.status
 
   def save_to_order_database(self):
+    """
+    Saves the order details to a CSV file named 'order_database.csv'. It computes the subtotal and tax to determine
+    the total cost of the order and formats the ordered items into a readable string.
+
+    The method checks if the file already contains headers. If not, it adds them before appending the order details.
+    Each order's details include the order number, customer name, delivery date, shipping address, order status,
+    detailed order items, and the total cost.
+
+    Raises:
+        FileNotFoundError: If the 'order_database.csv' file does not exist, it handles this exception by creating
+        a new file and writing the header.
+    """
     subtotal = sum(item['price'] * item['quantity'] for item in self.shopping_cart.items.values())
     tax = subtotal * 0.08
     total_cost = subtotal + tax
@@ -69,7 +81,7 @@ class Order:
             reader = csv.reader(csvfile)
             has_headers = next(reader, None)
     except FileNotFoundError:
-        has_headers = False 
+        has_headers = False
 
     with open('order_database.csv', 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
@@ -85,10 +97,17 @@ class Order:
             'Total Cost': f"${total_cost:.2f}"
         })
 
-
   def print_receipt(self, shopping_cart):
+    """
+    Prints the receipt for the order. It displays the order number and then calls the `print_receipt` method
+    on the ShoppingCart instance to print each item in the cart along with its quantity and price, and the total cost.
+
+    Args:
+        shopping_cart (ShoppingCart): The ShoppingCart object containing the items in the current order.
+    """
     print(f"Receipt for Order #{self.order_number}")
     shopping_cart.print_receipt()
+
 
 
   

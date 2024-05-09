@@ -1,6 +1,2 @@
 Order Number,Customer Name,Delivery Date,Shipping Address,Status,Order Details,Total Cost
-8155,ken,2024-05-06,1520 west 31st street,Order Shipped,Zolpidem (x1),$24.84
-4085,cool,2024-05-06,443 north longfellow ave,Order Placed,Zolpidem (x2),$49.68
-5289,ken,2024-05-06,1520 west 31st street,Cancelled,Acetaminophen (x2); Zolpidem (x1); Lorazepam (x2),$96.12
-7874,ken,2024-05-06,1520 w 31st st,Cancelled,Acetaminophen (x1),$16.20
-6402,boobybob,2024-05-06,1520 w 31st street,Order Shipped,Acetaminophen (x5); Codeine (x30),$469.80
+6228,ken,2024-05-12,1520 w 31st street,Order Placed,Zolpidem (x12); Biascodyl (x33),$868.32

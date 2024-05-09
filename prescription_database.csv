@@ -1,7 +1,7 @@
 Name,Expiration Date,Price,Stock
-Acetaminophen,3,15,12
-Amistriptyline,7,23,32
-Biascodyl,4,16,92
+Acetaminophen,3,15,82
+Amistriptyline,7,23,19
+Biascodyl,4,16,59
 Carbamazepine,12,25,11
 Citalopram,5,34,2
 Codeine,2,12,3
@@ -27,4 +27,4 @@ Octreotide,3,18,44
 Oxycodone,3,26,11
 Tramadol,5,15,42
 Trazodone,4,10,77
-Zolpidem,2,23,89
+Zolpidem,2,23,77

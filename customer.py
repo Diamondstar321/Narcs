@@ -1,6 +1,5 @@
 from prescription import Prescription
 import csv
-database_
 
 class Customer(Prescription):
   """
